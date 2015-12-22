@@ -4,16 +4,16 @@
  */
 'use strict';
 
-var React = require('react-native');
-var {
+import React from 'react-native';
+const {
   AppRegistry,
   StyleSheet,
   Text,
   View,
 } = React;
 
-var webseriesnative = React.createClass({
-  render: function() {
+class webseriesnative extends React.Component {
+  render() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
@@ -29,9 +29,9 @@ var webseriesnative = React.createClass({
       </View>
     );
   }
-});
+}
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
