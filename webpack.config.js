@@ -29,6 +29,14 @@ module.exports = {
         presets: ['es2015', 'stage-1', 'react']
       }
     }, {
+      test: /\.js$/,
+      include: /node_modules\/mrn/,
+      loader: 'babel',
+      query: {
+        cacheDirectory: true,
+        presets: ['es2015', 'stage-1', 'react']
+      }
+    }, {
       test: /\.(js|jsx|es6)$/,
       exclude: /node_modules/,
       loader: 'babel',
