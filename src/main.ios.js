@@ -5,27 +5,35 @@
 'use strict';
 
 import React from 'react-native';
+import Series from './ios/Components/Series';
 const {
   AppRegistry,
   StyleSheet,
-  Text,
   View,
 } = React;
 
 class webseriesnative extends React.Component {
   render() {
+      const data = [
+          {
+              id: 1,
+              title: 'Breaking Bad',
+              description: 'description of Breaking Bad',
+          },
+          {
+              id: 2,
+              title: 'Jessica Jones',
+              description: 'description of Jessica Jones',
+          },
+          {
+              id: 3,
+              title: 'The Big Bang Theory',
+              description: 'descripcion of The Big Bang Theory',
+          },
+      ];
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
+        <Series data={data} />
       </View>
     );
   }
@@ -34,19 +42,7 @@ class webseriesnative extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
   },
 });
 
