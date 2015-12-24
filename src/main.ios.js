@@ -5,36 +5,24 @@
 'use strict';
 
 import React from 'react-native';
-import Series from './ios/Components/Series';
+import SeriesScreen from './ios/Containers/SeriesScreen';
 const {
   AppRegistry,
   StyleSheet,
-  View,
+  NavigatorIOS,
 } = React;
 
 class webseriesnative extends React.Component {
   render() {
-      const data = [
-          {
-              id: 1,
-              title: 'Breaking Bad',
-              description: 'description of Breaking Bad',
-          },
-          {
-              id: 2,
-              title: 'Jessica Jones',
-              description: 'description of Jessica Jones',
-          },
-          {
-              id: 3,
-              title: 'The Big Bang Theory',
-              description: 'descripcion of The Big Bang Theory',
-          },
-      ];
+      let initialRoute = {
+          title: 'Series',
+          component: SeriesScreen,
+      };
     return (
-      <View style={styles.container}>
-        <Series data={data} />
-      </View>
+        <NavigatorIOS
+            initialRoute={initialRoute}
+            style={styles.container}
+        />
     );
   }
 }
