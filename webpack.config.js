@@ -14,6 +14,9 @@ module.exports = {
     path: path.resolve(__dirname, ''),
     filename: '[name].js',
   },
+  resolve: {
+      extensions: ['', '.js', '.ios.js', '.android.js']
+  },
   module: {
     preLoaders: [{
       test: /\.(js|jsx|es6)$/,

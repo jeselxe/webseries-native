@@ -5,7 +5,7 @@
 'use strict';
 
 import React from 'react-native';
-import SeriesScreen from './ios/Containers/SeriesScreen';
+import SeriesScreen from './Containers/SeriesScreen';
 const {
   AppRegistry,
   StyleSheet,
