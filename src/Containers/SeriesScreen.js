@@ -11,7 +11,10 @@ const {
 class SeriesScreen extends React.Component {
 
     static propTypes = {
-        navigator: PropTypes.object,
+        drawer: PropTypes.func.isRequired,
+        navigator: PropTypes.shape({
+
+        }),
     };
 
     render () {
@@ -35,6 +38,7 @@ class SeriesScreen extends React.Component {
         return(
             <View style={styles.container}>
                 <Series data={data}
+                    drawer={this.props.drawer}
                     navigator={this.props.navigator}
                 />
             </View>
