@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
-import toolbar from './toolbar';
+import series from './series';
 
 export default combineReducers({
-    toolbar,
+    series,
 });

@@ -1,6 +1,9 @@
+/*global fetch*/
 import React, {PropTypes} from 'react-native';
+import {connect} from 'react-redux/native';
 
 import Series from '../Components/Series.android';
+import config from '../config';
 
 const {
     View,
@@ -8,36 +11,53 @@ const {
     Platform,
 } = React;
 
+const mapStateToProps = (state) => {
+    return {
+        series: state.series.series,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getSeries : () => {
+            const api = config.api.url;
+            fetch(`${api}/series`)
+            .then((response) => response.json())
+            .then((data) => {
+                dispatch({
+                    type: 'GET_SERIES',
+                    series: data.series,
+                });
+            })
+            .done();
+        },
+    };
+};
+
 class SeriesScreen extends React.Component {
 
     static propTypes = {
         drawer: PropTypes.func.isRequired,
+        getSeries: PropTypes.func,
         navigator: PropTypes.shape({
 
         }),
+        series: PropTypes.arrayOf(PropTypes.shape({
+            id: PropTypes.number,
+            title: PropTypes.string,
+            description: PropTypes.string,
+        })),
     };
 
+    componentDidMount() {
+        this.props.getSeries();
+    }
+
     render () {
-        const data = [
-            {
-                id: 1,
-                title: 'Breaking Bad',
-                description: 'Description of Breaking Bad',
-            },
-            {
-                id: 2,
-                title: 'Jessica Jones',
-                description: 'Description of Jessica Jones',
-            },
-            {
-                id: 3,
-                title: 'The Big Bang Theory',
-                description: 'Description of The Big Bang Theory',
-            },
-        ];
+
         return(
             <View style={styles.container}>
-                <Series data={data}
+                <Series data={this.props.series}
                     drawer={this.props.drawer}
                     navigator={this.props.navigator}
                 />
@@ -53,4 +73,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default SeriesScreen;
+export default connect(mapStateToProps, mapDispatchToProps)(SeriesScreen);

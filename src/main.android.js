@@ -5,18 +5,25 @@
 'use strict';
 
 import React from 'react-native';
+import {createStore} from 'redux';
+import {Provider} from 'react-redux/native';
+
 import App from './Components/App.android';
+import Reducers from './Reducers';
 
 const {
   AppRegistry,
 } = React;
 
+const store = createStore(Reducers);
 
 class webseriesnative extends React.Component{
 
     render() {
         return (
-            <App />
+            <Provider store={store}>
+                {() => <App store={store} />}
+            </Provider>
         );
     }
 }
