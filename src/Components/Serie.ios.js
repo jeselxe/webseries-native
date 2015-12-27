@@ -64,7 +64,7 @@ class Serie extends React.Component {
     render () {
         return (
             <View style={styles.container}>
-                <Text>{this.props.serie.description}</Text>
+                <Text style={styles.description}>{this.props.serie.description}</Text>
                 <TableView style={{flex: 1}}
                     tableViewCellStyle={TableView.Consts.CellStyle.Subtitle}
                     tableViewStyle={TableView.Consts.Style.Grouped}
@@ -84,7 +84,7 @@ class Serie extends React.Component {
                                             },
                                             rightButtonTitle: 'Nuevo capítulo',
                                             onRightButtonPress: () => {
-                                                
+
                                             },
                                         })}
                                     >
@@ -104,6 +104,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         marginTop: 70,
+    },
+    description: {
+        fontSize:18,
+        padding: 10,
+        marginTop: 10,
+        marginBottom: 10,
     },
 });
 
