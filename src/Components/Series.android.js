@@ -1,11 +1,47 @@
+/*global fetch*/
 import React, {PropTypes} from 'react-native';
 import {Toolbar, List} from 'react-native-material-design';
+import {connect} from 'react-redux/native';
 
 import Serie from './Serie';
+import config from '../config';
 
 const {
     View,
 } = React;
+
+const mapStateToProps = (state) => {
+    return {
+        serie: state.series.serie,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getSerie: (navigator, id) => {
+            const api = config.api.url;
+            fetch(`${api}/series/${id}`)
+            .then((response) => response.json())
+            .then((data) => {
+                //Alert.alert('getSerie', JSON.stringify(data.serie.temporadas));
+                dispatch({
+                    type: 'SELECT_SERIE',
+                    serie: data.serie,
+                });
+                dispatch({
+                    type: 'GET_SEASONS',
+                    seasons: data.serie.temporadas,
+                });
+                navigator.push({
+                    title: 'serie',
+                    component: Serie,
+                    data: data.serie,
+                });
+            })
+            .done();
+        },
+    };
+};
 
 class Series extends React.Component {
 
@@ -16,6 +52,7 @@ class Series extends React.Component {
             description: PropTypes.string,
         })),
         drawer: PropTypes.func.isRequired,
+        getSerie: PropTypes.func,
         navigator: PropTypes.shape({
             push: PropTypes.func,
         }),
@@ -37,11 +74,7 @@ class Series extends React.Component {
                     this.props.data.map(serie => (
                         <List key={serie.id}
                             onPress={() => {
-                                this.props.navigator.push({
-                                    title: 'serie',
-                                    component: Serie,
-                                    data: serie,
-                                });
+                                this.props.getSerie(this.props.navigator,serie.id);
                             }}
                             primaryText={serie.title}
                             secondaryText={serie.description}
@@ -54,4 +87,4 @@ class Series extends React.Component {
     }
 }
 
-export default Series;
+export default connect(mapStateToProps, mapDispatchToProps)(Series);

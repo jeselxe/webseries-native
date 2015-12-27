@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react-native';
-
 import TableView from 'react-native-tableview';
+
+import Serie from './Serie.ios';
 
 class Series extends React.Component {
 
@@ -10,6 +11,9 @@ class Series extends React.Component {
             title: PropTypes.string,
             description: PropTypes.string,
         })),
+        navigator: PropTypes.shape({
+            push: PropTypes.func,
+        }),
     }
 
     render () {
@@ -24,6 +28,17 @@ class Series extends React.Component {
                             return (
                                 <TableView.Item detail={serie.description}
                                     key={serie.id}
+                                    onPress={() => this.props.navigator.push({
+                                        title: serie.title,
+                                        component: Serie,
+                                        passProps: {
+                                            serie,
+                                        },
+                                        rightButtonTitle: 'Nueva temporada',
+                                        onRightButtonPress: () => {
+                                            
+                                        },
+                                    })}
                                 >
                                     {serie.title}
                                 </TableView.Item>

@@ -1,7 +1,7 @@
 
 'use strict';
 
-import React, {PropTypes} from 'react-native';
+import React from 'react-native';
 import { List} from 'react-native-material-design';
 
 import SeriesScreen from '../Containers/SeriesScreen';
@@ -18,13 +18,6 @@ const {
 
 
 class App extends React.Component{
-
-    static propTypes = {
-        toolbar: PropTypes.shape({
-            icon: PropTypes.string,
-            title: PropTypes.string,
-        }),
-    }
 
     constructor(props) {
         super(props);

@@ -2,6 +2,7 @@ const initialState = {
   series: [],
   capitulos: [],
   comentarios: [],
+  temporadas: [],
   serie: {},
   temporada: null,
   capitulo: null,
@@ -13,6 +14,11 @@ export default function series(state=initialState, action) {
             return {
                 ...state,
                 series: action.series,
+            };
+        case 'GET_SEASONS':
+            return {
+                ...state,
+                temporadas: action.seasons,
             };
         case 'GET_EPISODES':
             return {

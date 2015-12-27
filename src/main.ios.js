@@ -5,33 +5,28 @@
 'use strict';
 
 import React from 'react-native';
-import SeriesScreen from './Containers/SeriesScreen';
+import {createStore} from 'redux';
+import {Provider} from 'react-redux/native';
+
+import App from './Components/App.ios';
+import Reducers from './Reducers';
+
 const {
   AppRegistry,
-  StyleSheet,
-  NavigatorIOS,
 } = React;
+
+const store = createStore(Reducers);
 
 class webseriesnative extends React.Component {
   render() {
-      let initialRoute = {
-          title: 'Series',
-          component: SeriesScreen,
-      };
     return (
-        <NavigatorIOS
-            initialRoute={initialRoute}
-            style={styles.container}
-        />
+        <Provider store={store}>
+            {() => <App store={store} />}
+        </Provider>
     );
   }
+
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5FCFF',
-  },
-});
 
 AppRegistry.registerComponent('webseriesnative', () => webseriesnative);

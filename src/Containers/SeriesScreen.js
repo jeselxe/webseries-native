@@ -2,7 +2,7 @@
 import React, {PropTypes} from 'react-native';
 import {connect} from 'react-redux/native';
 
-import Series from '../Components/Series.android';
+import Series from '../Components/Series.ios';
 import config from '../config';
 
 const {
@@ -37,7 +37,7 @@ const mapDispatchToProps = (dispatch) => {
 class SeriesScreen extends React.Component {
 
     static propTypes = {
-        drawer: PropTypes.func.isRequired,
+        drawer: PropTypes.func,
         getSeries: PropTypes.func,
         navigator: PropTypes.shape({
 
@@ -69,7 +69,7 @@ class SeriesScreen extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: (Platform.OS === 'ios') ? 70 : 0,
+        marginTop: (Platform.OS === 'ios') ? 64 : 0,
     },
 });
 
