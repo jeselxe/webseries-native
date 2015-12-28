@@ -1,5 +1,8 @@
+/*global fetch*/
 import React, { PropTypes } from 'react-native';
+import {connect} from 'react-redux/native';
 import t from 'tcomb-form-native';
+import config from '../config';
 
 const {
     View,
@@ -14,10 +17,35 @@ const Serie = t.struct({
   description: t.String,
 });
 
+const mapStateToProps = (state) => {
+    return {
+        token: state.login.token,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getSeries: () => {
+            const api = config.api.url;
+            fetch(`${api}/series`)
+            .then((response) => response.json())
+            .then((data) => {
+                dispatch({
+                    type: 'GET_SERIES',
+                    series: data.series,
+                });
+            })
+            .done();
+        },
+    };
+};
+
 class NewSerie extends React.Component {
 
     static propTypes = {
+        getSeries: PropTypes.func,
         send: PropTypes.func,
+        token: PropTypes.string,
     }
 
     componentDidMount() {
@@ -25,8 +53,27 @@ class NewSerie extends React.Component {
     }
     submit() {
         const serie = this.refs.form.getValue();
-        if(serie)
-        Alert.alert(serie.title, serie.description);
+        if(serie){
+            if(this.props.token) {
+                const URL = `${config.api.url}/series`;
+                const body = JSON.stringify(serie);
+                fetch(URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type' : 'application/json',
+                        'Authorization': `Bearer ${this.props.token}`,
+                    },
+                    body,
+                })
+                .then(() => {
+                    this.props.getSeries();
+                })
+                .done();
+            }
+            else {
+                Alert.alert('No estás logueado', 'Inicia sesión primero');
+            }
+        }
     }
     render () {
         const options = {
@@ -82,4 +129,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default NewSerie;
+export default connect(mapStateToProps, mapDispatchToProps)(NewSerie);
