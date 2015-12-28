@@ -1,6 +1,9 @@
 import React, {PropTypes} from 'react-native';
+import {connect} from 'react-redux/native';
 import TableView from 'react-native-tableview';
 import Spinner from 'react-native-spinkit';
+import ModalWrapper from './ModalWrapper';
+import NewSeason from './NewSeason.ios';
 
 import Serie from './Serie.ios';
 
@@ -8,6 +11,17 @@ const {
     View,
     StyleSheet,
 } = React;
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        openModal: (component) => {
+            dispatch({
+                type: 'OPEN_MODAL',
+                component,
+            });
+        },
+    };
+};
 
 class Series extends React.Component {
 
@@ -48,9 +62,7 @@ class Series extends React.Component {
                                                 serie,
                                             },
                                             rightButtonTitle: 'Nueva temporada',
-                                            onRightButtonPress: () => {
-
-                                            },
+                                            onRightButtonPress: () => this.props.openModal(<ModalWrapper><NewSeason /></ModalWrapper>),
                                         })}
                                     >
                                         {serie.title}
@@ -75,4 +87,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Series;
+export default connect(null, mapDispatchToProps)(Series);

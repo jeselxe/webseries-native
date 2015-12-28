@@ -4,6 +4,8 @@ import {connect} from 'react-redux/native';
 import TableView from 'react-native-tableview';
 import config from '../config';
 import Comentarios from './Comentarios.ios';
+import ModalWrapper from './ModalWrapper';
+import NewComment from './NewComment.ios';
 
 const {
     StyleSheet,
@@ -30,6 +32,12 @@ const mapDispatchToProps = (dispatch) => {
                 });
             })
             .done();
+        },
+        openModal: (component) => {
+            dispatch({
+                type: 'OPEN_MODAL',
+                component,
+            });
         },
     };
 };
@@ -78,9 +86,7 @@ class Temporada extends React.Component {
                                                 temporada: this.props.temporada.id,
                                             },
                                             rightButtonTitle: 'Nuevo comentario',
-                                            onRightButtonPress: () => {
-                                                
-                                            },
+                                            onRightButtonPress: () => this.props.openModal(<ModalWrapper><NewComment /></ModalWrapper>),
                                         })}
                                     >
                                         {capitulo.title}

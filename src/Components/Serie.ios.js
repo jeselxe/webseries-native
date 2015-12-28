@@ -4,6 +4,8 @@ import {connect} from 'react-redux/native';
 import TableView from 'react-native-tableview';
 import config from '../config';
 import Temporada from './Temporada.ios';
+import ModalWrapper from './ModalWrapper';
+import NewEpisode from './NewEpisode.ios';
 
 const {
     View,
@@ -36,6 +38,12 @@ const mapDispatchToProps = (dispatch) => {
             })
             .done();
         },
+        openModal: (component) => {
+            dispatch({
+                type: 'OPEN_MODAL',
+                component,
+            });
+        },
     };
 };
 
@@ -46,6 +54,7 @@ class Serie extends React.Component {
         navigator: PropTypes.shape({
             push: PropTypes.func,
         }),
+        openModal: PropTypes.func,
         serie: PropTypes.shape({
             id: PropTypes.number,
             title: PropTypes.string,
@@ -83,9 +92,7 @@ class Serie extends React.Component {
                                                 temporada,
                                             },
                                             rightButtonTitle: 'Nuevo capítulo',
-                                            onRightButtonPress: () => {
-
-                                            },
+                                            onRightButtonPress: () => this.props.openModal(<ModalWrapper><NewEpisode /></ModalWrapper>),
                                         })}
                                     >
                                         {title}
