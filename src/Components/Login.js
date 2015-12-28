@@ -97,11 +97,14 @@ class Login extends React.Component {
     }
 
     onlogin() {
-        const data = {
-            user: this.refs.login.getValue().nombre,
-            password: this.refs.login.getValue().password,
-        };
-        this.props.login(data);
+        const model = this.refs.login.getValue();
+        if(model) {
+            const data = {
+                user: model.nombre,
+                password: model.password,
+            };
+            this.props.login(data);
+        }
     }
 
     onLogout() {
@@ -110,7 +113,7 @@ class Login extends React.Component {
 
     onRegister() {
         const model = this.refs.register.getValue();
-        if (model) {
+        if (model && model.password === model.confirm) {
             const data = {
                 nickname: model.nombre,
                 password: model.password,
