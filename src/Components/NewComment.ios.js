@@ -10,7 +10,7 @@ const {
 const Form = t.form.Form;
 
 const Comentario = t.struct({
-    comentario: t.String,
+    comment: t.String,
 });
 
 class NewComment extends React.Component {
@@ -33,9 +33,20 @@ class NewComment extends React.Component {
         Alert.alert(this.state.title, this.state.description);
     }
     render () {
+        const options = {
+            fields: {
+                comment: {
+                    label: 'Descripción',
+                    multiline: true,
+                    stylesheet: Object.assign({},t.form.Form.stylesheet,{textbox: {normal: styles.normal, error: styles.error}}),
+                },
+            },
+        };
         return (
             <View style={styles.container}>
-                <Form ref="form"
+                <Form
+                    options={options}
+                    ref="form"
                     type={Comentario}
                 />
             </View>
@@ -48,6 +59,27 @@ const styles = StyleSheet.create({
         marginTop: 50,
         padding: 20,
         backgroundColor: '#ffffff',
+    },
+    normal: {
+      color: '#000000',
+      fontSize: 17,
+      height: 72,
+      padding: 7,
+      borderRadius: 4,
+      borderColor: '#cccccc',
+      borderWidth: 1,
+      marginBottom: 5,
+    },
+    // the style applied when a validation error occours
+    error: {
+      color: '#000000',
+      fontSize: 17,
+      height: 72,
+      padding: 7,
+      borderRadius: 4,
+      borderColor: '#a94442',
+      borderWidth: 1,
+      marginBottom: 5,
     },
 });
 
