@@ -4,6 +4,7 @@ import SeriesScreen from '../Containers/SeriesScreen';
 import NewSerie from './NewSerie.ios';
 import ModalWrapper from './ModalWrapper';
 import Login from './Login';
+import localStorage from '../Utils/localStorage';
 
 const {
   StyleSheet,
@@ -22,6 +23,15 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        isLogged: () => {
+            localStorage.get('token').then((token) => {
+                dispatch({
+                    type: 'INITIAL_LOGIN',
+                    token,
+                    logged: (token !== undefined),
+                });
+            });
+        },
         openModal: (title, component) => {
             dispatch({
                 type: 'OPEN_MODAL',
@@ -47,6 +57,7 @@ class App extends React.Component {
         this.state = {
             selectedTab: 'series',
         };
+        props.isLogged();
     }
     render () {
         let initialRoute = {

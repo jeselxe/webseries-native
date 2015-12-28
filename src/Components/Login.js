@@ -1,11 +1,16 @@
+/*global fetch*/
 import React from 'react-native';
+import {connect} from 'react-redux/native';
 import t from 'tcomb-form-native';
+import config from '../config';
+import localStorage from '../Utils/localStorage';
 
 const {
     View,
     Text,
     StyleSheet,
     TouchableOpacity,
+    Alert,
 } = React;
 
 const Form = t.form.Form;
@@ -20,6 +25,65 @@ const Register = t.struct({
     confirm: t.String,
 });
 
+const mapStateToProps = (state) => {
+    return {
+        logged: state.login.logged,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        login: (login) => {
+            const URL = `${config.api.url}/usuario/login`;
+            let body = JSON.stringify(login);
+            fetch(URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body,
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                let token = data.token;
+
+                localStorage.save('token', token);
+
+                dispatch({
+                    type: 'LOGIN_SUCCESS',
+                    token,
+                });
+
+                Alert.alert('Enhorabuena', 'Ha accedido al sistema correctamente');
+            })
+            .done();
+        },
+        logout: () => {
+            localStorage.delete('token').then(() => {
+                dispatch({
+                    type: 'LOGOUT',
+                });
+            });
+        },
+        register: (data) => {
+            const URL = `${config.api.url}/usuario/login`;
+            let body = JSON.stringify(data);
+            fetch(URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body,
+            })
+            .then((response) => response.json())
+            .then((data) => {
+
+            })
+            .done();
+        },
+    };
+};
+
 class Login extends React.Component {
     constructor(props) {
         super(props);
@@ -28,16 +92,28 @@ class Login extends React.Component {
         };
     }
 
+    onlogin() {
+        const data = {
+            user: this.refs.login.getValue().nombre,
+            password: this.refs.login.getValue().password,
+        };
+        this.props.login(data);
+    }
+
+    onLogout() {
+        this.props.logout();
+    }
+
     renderLogin(options) {
         return(
             <View>
                 <Form
                     options={options}
-                    ref= "form"
+                    ref= "login"
                     type={LoginForm}
                 />
                 <TouchableOpacity
-                    onPress={this.onPress}
+                    onPress={this.onlogin.bind(this)}
                     style={styles.button}
                 >
                     <Text style={styles.buttonText}>Entrar</Text>
@@ -47,6 +123,19 @@ class Login extends React.Component {
                     style={styles.registerButton}
                 >
                     <Text style={styles.buttonText}>Registrarse</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
+    renderLogout() {
+        return (
+            <View>
+                <TouchableOpacity
+                    onPress={this.onLogout.bind(this)}
+                    style={styles.logoutButton}
+                >
+                    <Text style={styles.buttonText}>Salir</Text>
                 </TouchableOpacity>
             </View>
         );
@@ -83,7 +172,11 @@ class Login extends React.Component {
         };
         return (
             <View style={styles.container}>
-                {this.state.login ? this.renderLogin(options) : this.renderRegister(options)}
+                {
+                    this.props.logged ?
+                    this.renderLogout() :
+                    (this.state.login ? this.renderLogin(options) : this.renderRegister(options))
+                }
             </View>
         );
     }
@@ -120,6 +213,16 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         justifyContent: 'center',
     },
+    logoutButton: {
+        height: 36,
+        backgroundColor: '#a94442',
+        borderColor: '#a94442',
+        borderWidth: 1,
+        borderRadius: 8,
+        marginBottom: 10,
+        alignSelf: 'stretch',
+        justifyContent: 'center',
+    },
 });
 
-export default Login;
+export default connect(mapStateToProps,mapDispatchToProps)(Login);
