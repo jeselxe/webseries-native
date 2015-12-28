@@ -1,4 +1,3 @@
-/*eslint react/no-set-state:0*/
 import React, { PropTypes } from 'react-native';
 import {connect} from 'react-redux/native';
 

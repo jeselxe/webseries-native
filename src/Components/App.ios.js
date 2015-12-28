@@ -3,12 +3,15 @@ import {connect} from 'react-redux/native';
 import SeriesScreen from '../Containers/SeriesScreen';
 import NewSerie from './NewSerie.ios';
 import ModalWrapper from './ModalWrapper';
+import Login from './Login';
 
 const {
   StyleSheet,
   NavigatorIOS,
+  TabBarIOS,
   Modal,
   View,
+  Text,
 } = React;
 
 const mapStateToProps = (state) => {
@@ -41,6 +44,9 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            selectedTab: 'series',
+        };
     }
     render () {
         let initialRoute = {
@@ -50,19 +56,53 @@ class App extends React.Component {
             onRightButtonPress: () => this.props.openModal('Nueva Serie', (<ModalWrapper>{NewSerie}</ModalWrapper>)),
         };
         return (
-            <View style={styles.container}>
-                <NavigatorIOS
-                    initialRoute={initialRoute}
-                    style={styles.container}
-                />
-                <Modal animated
-                    visible={this.props.modal.open}
+            <TabBarIOS >
+                <TabBarIOS.Item icon={{uri: 'featured', scale: 3}}
+                    onPress={() => {
+                        this.setState({
+                            selectedTab: 'series',
+                        });
+                    }}
+                    selected={this.state.selectedTab === 'series'}
+                    title="Series"
                 >
-                    {
-                        this.props.modal.component
-                    }
-                </Modal>
-            </View>
+                    <View style={styles.container}>
+                        <NavigatorIOS
+                            initialRoute={initialRoute}
+                            style={styles.container}
+                        />
+                        <Modal animated
+                            visible={this.props.modal.open}
+                        >
+                            {
+                                this.props.modal.component
+                            }
+                        </Modal>
+                    </View>
+                </TabBarIOS.Item>
+                <TabBarIOS.Item icon={{uri: 'featured', scale: 3}}
+                    onPress={() => {
+                        this.setState({
+                            selectedTab: 'news',
+                        });
+                    }}
+                    selected={this.state.selectedTab === 'news'}
+                    title="Notícias"
+                >
+                    <View style={[styles.container, {justifyContent: 'center', alignItems: 'center'}]}><Text>PROXIMAMENTE</Text></View>
+                </TabBarIOS.Item>
+                <TabBarIOS.Item icon={{uri: 'featured', scale: 3}}
+                    onPress={() => {
+                        this.setState({
+                            selectedTab: 'login',
+                        });
+                    }}
+                    selected={this.state.selectedTab === 'login'}
+                    title="Login"
+                >
+                    <Login />
+                </TabBarIOS.Item>
+            </TabBarIOS>
         );
     }
 }
@@ -70,7 +110,7 @@ class App extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5FCFF',
+        backgroundColor: 'white',
     },
 });
 
