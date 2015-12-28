@@ -31,6 +31,7 @@ class ModalWrapper extends React.Component {
         closeModal: PropTypes.func,
         modal: PropTypes.shape({
             title: PropTypes.string,
+            data: PropTypes.shape({}),
         }),
     }
 
@@ -72,7 +73,9 @@ class ModalWrapper extends React.Component {
                     </View>
                 </View>
                 <View style={styles.content}>
-                    <this.props.children send={this.setHandler.bind(this)} />
+                    <this.props.children data={this.props.modal.data}
+                        send={this.setHandler.bind(this)}
+                    />
                 </View>
             </View>
         );

@@ -75,7 +75,6 @@ class Series extends React.Component {
     }
 
     onNewSeason(serie) {
-        console.log(this.props);
         if (this.props.token){
             this.props.addSeason(this.props.token, serie)
             .then(() => {

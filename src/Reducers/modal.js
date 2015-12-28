@@ -2,6 +2,7 @@ const initialState = {
   open: false,
   component: null,
   title: '',
+  data: null,
 };
 
 export default function series(state=initialState, action) {
@@ -12,6 +13,7 @@ export default function series(state=initialState, action) {
                 open: true,
                 component: action.component,
                 title: action.title,
+                data: action.data,
             };
         case 'CLOSE_MODAL':
             return {
