@@ -33,7 +33,7 @@ module.exports = {
       }
     }, {
       test: /\.js$/,
-      include: /node_modules\/mrn/,
+      include: /node_modules\/tcomb-form-native/,
       loader: 'babel',
       query: {
         cacheDirectory: true,

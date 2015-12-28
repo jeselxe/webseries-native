@@ -33,10 +33,11 @@ const mapDispatchToProps = (dispatch) => {
             })
             .done();
         },
-        openModal: (component) => {
+        openModal: (title, component) => {
             dispatch({
                 type: 'OPEN_MODAL',
                 component,
+                title,
             });
         },
     };
@@ -52,6 +53,7 @@ class Temporada extends React.Component {
         navigator: PropTypes.shape({
             push: PropTypes.func,
         }),
+        openModal: PropTypes.func,
         serie: PropTypes.shape({
             id: PropTypes.number,
         }),
@@ -86,7 +88,7 @@ class Temporada extends React.Component {
                                                 temporada: this.props.temporada.id,
                                             },
                                             rightButtonTitle: 'Nuevo comentario',
-                                            onRightButtonPress: () => this.props.openModal(<ModalWrapper><NewComment /></ModalWrapper>),
+                                            onRightButtonPress: () => this.props.openModal('Nuevo comentario',(<ModalWrapper>{NewComment}</ModalWrapper>)),
                                         })}
                                     >
                                         {capitulo.title}

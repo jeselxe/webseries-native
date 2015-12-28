@@ -1,75 +1,49 @@
-import React from 'react-native';
+import React, { PropTypes } from 'react-native';
+import t from 'tcomb-form-native';
+
+let Form = t.form.Form;
+
+const Serie = t.struct({
+  titulo: t.String,
+  descripcion: t.String,
+});
 
 const {
     View,
-    Text,
-    TextInput,
-    TouchableHighlight,
     StyleSheet,
     Alert,
 } = React;
 
 class NewSerie extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state= {
-            title: '',
-            description: '',
-        };
+
+    static propTypes = {
+        send: PropTypes.func,
+    }
+
+    componentDidMount() {
+        this.props.send(this.submit.bind(this));
     }
     submit() {
-        Alert.alert('text', `${this.state.title} - ${this.state.description}`);
+        const serie = this.refs.form.getValue();
+        if(serie)
+        Alert.alert(serie.titulo, serie.descripcion);
     }
     render () {
         return (
-            <View>
-                <Text style={styles.title}>NUEVA SERIE</Text>
-                <TextInput onChangeText={(title) => this.setState({title})}
-                    placeholder="Título"
-                    style={styles.input}
-                    value={this.state.title}
+            <View style={styles.container}>
+                <Form ref="form"
+                    type={Serie}
                 />
-                <TextInput multiline
-                    onChangeText={(description) => this.setState({description})}
-                    style={styles.input}
-                    value={this.state.description}
-                />
-            <TouchableHighlight onPress={this.submit.bind(this)}
-                style={styles.button}
-            >
-                <Text style={styles.buttonText}>Crear</Text>
-            </TouchableHighlight>
             </View>
         );
     }
 }
 
 const styles = StyleSheet.create({
-    input: {
-        height: 40,
-        width: 400,
-        marginBottom: 20,
-        borderTopWidth: 0,
-        borderLeftWidth: 0,
-        borderRightWidth: 0,
-        borderColor: 'gray',
-        borderBottomWidth: 1,
-        backgroundColor: '#d7d7d7',
-    },
-    button: {
-        width: 400,
-        height: 40,
-        backgroundColor: '#61dd62',
-    },
-    buttonText: {
-        color: 'white',
-        textAlign: 'center',
-        flex: 1,
-    },
-    title: {
-        flex: 1,
-        textAlign: 'center',
-        fontSize: 24,
+    container: {
+        marginTop: 50,
+        padding: 20,
+        backgroundColor: '#ffffff',
     },
 });
 

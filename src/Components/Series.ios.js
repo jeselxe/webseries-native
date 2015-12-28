@@ -2,22 +2,22 @@ import React, {PropTypes} from 'react-native';
 import {connect} from 'react-redux/native';
 import TableView from 'react-native-tableview';
 import Spinner from 'react-native-spinkit';
-import ModalWrapper from './ModalWrapper';
-import NewSeason from './NewSeason.ios';
 
 import Serie from './Serie.ios';
 
 const {
     View,
     StyleSheet,
+    Alert,
 } = React;
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        openModal: (component) => {
+        openModal: (title, component) => {
             dispatch({
                 type: 'OPEN_MODAL',
                 component,
+                title,
             });
         },
     };
@@ -62,7 +62,7 @@ class Series extends React.Component {
                                                 serie,
                                             },
                                             rightButtonTitle: 'Nueva temporada',
-                                            onRightButtonPress: () => this.props.openModal(<ModalWrapper><NewSeason /></ModalWrapper>),
+                                            onRightButtonPress: () => Alert.alert('Nueva temporada','SCRIPT'),
                                         })}
                                     >
                                         {serie.title}

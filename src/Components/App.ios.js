@@ -19,10 +19,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        openModal: (component) => {
+        openModal: (title, component) => {
             dispatch({
                 type: 'OPEN_MODAL',
                 component,
+                title,
             });
         },
     };
@@ -46,7 +47,7 @@ class App extends React.Component {
             title: 'Series',
             component: SeriesScreen,
             rightButtonTitle: 'New',
-            onRightButtonPress: () => this.props.openModal(<ModalWrapper><NewSerie /></ModalWrapper>),
+            onRightButtonPress: () => this.props.openModal('Nueva Serie', (<ModalWrapper>{NewSerie}</ModalWrapper>)),
         };
         return (
             <View style={styles.container}>

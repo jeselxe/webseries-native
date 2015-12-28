@@ -38,10 +38,11 @@ const mapDispatchToProps = (dispatch) => {
             })
             .done();
         },
-        openModal: (component) => {
+        openModal: (title, component) => {
             dispatch({
                 type: 'OPEN_MODAL',
                 component,
+                title,
             });
         },
     };
@@ -92,7 +93,7 @@ class Serie extends React.Component {
                                                 temporada,
                                             },
                                             rightButtonTitle: 'Nuevo capítulo',
-                                            onRightButtonPress: () => this.props.openModal(<ModalWrapper><NewEpisode /></ModalWrapper>),
+                                            onRightButtonPress: () => this.props.openModal('Nuevo capítulo',(<ModalWrapper>{NewEpisode}</ModalWrapper>)),
                                         })}
                                     >
                                         {title}
