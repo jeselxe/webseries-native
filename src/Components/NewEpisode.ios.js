@@ -63,14 +63,6 @@ class NewEpisode extends React.Component {
         token: PropTypes.string,
     }
 
-    constructor(props) {
-        super(props);
-        this.state= {
-            title: 'Nuevo',
-            description: 'Capitulo',
-        };
-
-    }
     componentDidMount() {
         this.props.send(this.submit.bind(this));
     }

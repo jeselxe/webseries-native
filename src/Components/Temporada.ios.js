@@ -89,7 +89,7 @@ class Temporada extends React.Component {
                                                 temporada: this.props.temporada.id,
                                             },
                                             rightButtonTitle: 'Nuevo comentario',
-                                            onRightButtonPress: () => this.props.openModal('Nuevo comentario',(<ModalWrapper>{NewComment}</ModalWrapper>), {serie: this.props.serie.id, temporada: this.props.temporada.id}),
+                                            onRightButtonPress: () => this.props.openModal('Nuevo comentario',(<ModalWrapper>{NewComment}</ModalWrapper>), {serie: this.props.serie.id, temporada: this.props.temporada.id, capitulo: capitulo.id}),
                                         })}
                                     >
                                         {capitulo.title}

@@ -1,5 +1,8 @@
+/*global fetch*/
 import React, { PropTypes } from 'react-native';
+import {connect} from 'react-redux/native';
 import t from 'tcomb-form-native';
+import config from '../config';
 
 const {
     View,
@@ -13,30 +16,78 @@ const Comentario = t.struct({
     comment: t.String,
 });
 
+const mapStateToProps = (state) => {
+    return {
+        token: state.login.token,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        addComment: (token, serie, season, episode, data) => {
+            const URL = `${config.api.url}/series/${serie}/temporada/${season}/capitulo/${episode}/comentario`;
+            const body = JSON.stringify(data);
+            return fetch(URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body,
+            });
+        },
+        getCapitulo: (serie, season, episode) => {
+            const URL = `${config.api.url}/series/${serie}/temporada/${season}/capitulo/${episode}`;
+            fetch(URL)
+            .then((response) => response.json())
+            .then((data) => {
+                //Alert.alert('getSerie', JSON.stringify(data.serie.temporadas));
+                dispatch({
+                    type: 'GET_COMMENTS',
+                    comments: data.comentarios,
+                });
+            })
+            .done();
+        },
+    };
+};
+
 class NewComment extends React.Component {
     static propTypes = {
+        addComment: PropTypes.func,
+        data: PropTypes.shape({
+            serie: PropTypes.number.isRequired,
+            temporada: PropTypes.number.isRequired,
+            capitulo: PropTypes.number.isRequired,
+        }),
+        getCapitulo: PropTypes.func,
         send: PropTypes.func,
+        token: PropTypes.string,
     }
 
-    constructor(props) {
-        super(props);
-        this.state= {
-            title: 'Nuevo',
-            description: 'Comentario',
-        };
-
-    }
     componentDidMount() {
         this.props.send(this.submit.bind(this));
     }
     submit() {
-        Alert.alert(this.state.title, this.state.description);
+        const comentario = this.refs.form.getValue();
+        if(comentario){
+            if(this.props.token) {
+                const {serie, temporada, capitulo} = this.props.data;
+                this.props.addComment(this.props.token, serie, temporada, capitulo, comentario).then(() => {
+                    this.props.getCapitulo(serie, temporada, capitulo);
+                })
+                .done();
+            }
+            else {
+                Alert.alert('No estás logueado', 'Inicia sesión primero');
+            }
+        }
     }
     render () {
         const options = {
             fields: {
                 comment: {
-                    label: 'Descripción',
+                    label: 'Comentario',
                     multiline: true,
                     stylesheet: Object.assign({},t.form.Form.stylesheet,{textbox: {normal: styles.normal, error: styles.error}}),
                 },
@@ -83,4 +134,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default NewComment;
+export default connect(mapStateToProps,mapDispatchToProps)(NewComment);
