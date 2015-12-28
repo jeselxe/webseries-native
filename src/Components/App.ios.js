@@ -25,10 +25,11 @@ const mapDispatchToProps = (dispatch) => {
     return {
         isLogged: () => {
             localStorage.get('token').then((token) => {
+                let logged = (token !== null);
                 dispatch({
                     type: 'INITIAL_LOGIN',
                     token,
-                    logged: (token !== undefined),
+                    logged,
                 });
             });
         },
@@ -45,6 +46,7 @@ const mapDispatchToProps = (dispatch) => {
 class App extends React.Component {
 
     static propTypes = {
+        isLogged: PropTypes.func,
         modal: PropTypes.shape({
             open: PropTypes.bool,
             component: PropTypes.element,

@@ -1,5 +1,5 @@
 /*global fetch*/
-import React from 'react-native';
+import React, { PropTypes } from 'react-native';
 import {connect} from 'react-redux/native';
 import t from 'tcomb-form-native';
 import config from '../config';
@@ -63,28 +63,32 @@ const mapDispatchToProps = (dispatch) => {
                 dispatch({
                     type: 'LOGOUT',
                 });
+                localStorage.delete('token');
             });
         },
         register: (data) => {
-            const URL = `${config.api.url}/usuario/login`;
+            const URL = `${config.api.url}/usuario`;
             let body = JSON.stringify(data);
-            fetch(URL, {
+            return fetch(URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body,
-            })
-            .then((response) => response.json())
-            .then((data) => {
-
-            })
-            .done();
+            });
         },
     };
 };
 
 class Login extends React.Component {
+
+    static propTypes = {
+        logged: PropTypes.bool,
+        login: PropTypes.func,
+        logout: PropTypes.func,
+        register: PropTypes.func,
+    }
+
     constructor(props) {
         super(props);
         this.state = {
@@ -102,6 +106,23 @@ class Login extends React.Component {
 
     onLogout() {
         this.props.logout();
+    }
+
+    onRegister() {
+        const model = this.refs.register.getValue();
+        if (model) {
+            const data = {
+                nickname: model.nombre,
+                password: model.password,
+            };
+
+            this.props.register(data).then(() => {
+                this.props.login({
+                    user: model.nombre,
+                    password: model.password,
+                });
+            });
+        }
     }
 
     renderLogin(options) {
@@ -150,10 +171,16 @@ class Login extends React.Component {
                     type={Register}
                 />
                 <TouchableOpacity
-                    onPress={this.onPress}
+                    onPress={this.onRegister.bind(this)}
                     style={styles.registerButton}
                 >
                     <Text style={styles.buttonText}>Registrarse</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => this.setState({login: true})}
+                    style={styles.button}
+                >
+                    <Text style={styles.buttonText}>Volver</Text>
                 </TouchableOpacity>
             </View>
         );
