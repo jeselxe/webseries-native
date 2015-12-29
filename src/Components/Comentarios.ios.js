@@ -8,6 +8,7 @@ import config from '../config';
 const {
     View,
     Text,
+    Alert,
     StyleSheet,
 } = React;
 
@@ -15,6 +16,7 @@ const mapStateToProps = (state) => {
     return {
         comentarios: state.series.comentarios,
         serie: state.series.serie,
+        token: state.login.token,
     };
 };
 
@@ -35,6 +37,16 @@ const mapDispatchToProps = (dispatch) => {
             })
             .done();
         },
+        deleteComments: (token, serie, temporada, capitulo, comentario) => {
+            const URL = `${config.api.url}/series/${serie}/temporada/${temporada}/capitulo/${capitulo}/comentario/${comentario}`;
+            return fetch(URL, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+        },
     };
 };
 
@@ -49,32 +61,47 @@ class Comentarios extends React.Component {
         data: PropTypes.shape({
             id: PropTypes.number,
         }),
+        deleteComments: PropTypes.func,
         getComentarios: PropTypes.func,
         serie: PropTypes.shape({
             id: PropTypes.number,
         }),
         temporada: PropTypes.number,
+        token: PropTypes.string,
     }
 
     componentDidMount() {
         this.props.getComentarios(this.props.serie.id, this.props.temporada, this.props.data.id);
     }
 
+    onDelete(comentario) {
+        if (this.props.token){
+            this.props.deleteComments(this.props.token, this.props.serie.id, this.props.temporada, this.props.data.id, comentario)
+            .then(() => {
+                this.props.getComentarios(this.props.serie.id, this.props.temporada, this.props.data.id);
+            });
+        }
+        else {
+            Alert.alert('No estás logueado','Inicia sesión primero');
+        }
+    }
+
     render () {
-        let actions = [
-            {
-                text: 'Borrar',
-                backgroundColor: '#a94442',
-            },
-            {
-                text: 'Editar',
-                backgroundColor: '#48BBEC',
-            },
-        ];
         return(
             <View style={styles.container}>
                 {
                     this.props.comentarios.map((comentario) => {
+                        let actions = [
+                            {
+                                text: 'Borrar',
+                                backgroundColor: '#a94442',
+                                onPress: this.onDelete.bind(this, comentario.id),
+                            },
+                            {
+                                text: 'Editar',
+                                backgroundColor: '#48BBEC',
+                            },
+                        ];
                         return (
                             <Swipeout key={comentario.id}
                                 right={actions}
