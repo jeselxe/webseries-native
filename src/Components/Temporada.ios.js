@@ -36,7 +36,7 @@ const mapDispatchToProps = (dispatch) => {
             })
             .done();
         },
-        deleteTemporada: (token, serie, temporada, capitulo) => {
+        deleteCapitulo: (token, serie, temporada, capitulo) => {
             const URL = `${config.api.url}/series/${serie}/temporada/${temporada}/capitulo/${capitulo}`;
             return fetch(URL, {
                 method: 'DELETE',
@@ -63,7 +63,7 @@ class Temporada extends React.Component {
             id: PropTypes.number,
             title: PropTypes.string,
         })),
-        deleteTemporada: PropTypes.func,
+        deleteCapitulo: PropTypes.func,
         getTemporada: PropTypes.func,
         navigator: PropTypes.shape({
             push: PropTypes.func,
@@ -85,8 +85,9 @@ class Temporada extends React.Component {
 
     onDelete(capitulo) {
         if (this.props.token){
-            this.props.deleteTemporada(this.props.token, this.props.serie.id, this.props.temporada.id, capitulo)
+            this.props.deleteCapitulo(this.props.token, this.props.serie.id, this.props.temporada.id, capitulo)
             .then(() => {
+                Alert.alert('Borrado!!','El capítulo se ha borrado correctamente');
                 this.props.getTemporada(this.props.serie.id, this.props.temporada.id);
             });
         }

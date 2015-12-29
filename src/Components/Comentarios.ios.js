@@ -78,6 +78,7 @@ class Comentarios extends React.Component {
         if (this.props.token){
             this.props.deleteComments(this.props.token, this.props.serie.id, this.props.temporada, this.props.data.id, comentario)
             .then(() => {
+                Alert.alert('Borrado!!','El comentario se ha borrado correctamente');
                 this.props.getComentarios(this.props.serie.id, this.props.temporada, this.props.data.id);
             });
         }

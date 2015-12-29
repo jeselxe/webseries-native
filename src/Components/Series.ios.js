@@ -116,6 +116,7 @@ class Series extends React.Component {
         if (this.props.token){
             this.props.deleteSerie(this.props.token, serie)
             .then(() => {
+                Alert.alert('Borrada!!','La serie se ha borrado correctamente');
                 this.props.getSeries();
             });
         }

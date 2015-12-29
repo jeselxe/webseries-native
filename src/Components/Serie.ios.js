@@ -92,6 +92,7 @@ class Serie extends React.Component {
         if (this.props.token){
             this.props.deleteTemporada(this.props.token, this.props.serie.id, temporada)
             .then(() => {
+                Alert.alert('Borrada!!','La temporada se ha borrado correctamente');
                 this.props.getSerie(this.props.serie.id);
             });
         }
