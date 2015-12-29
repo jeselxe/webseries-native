@@ -11,6 +11,7 @@ import NewEpisode from './NewEpisode.ios';
 const {
     View,
     Text,
+    Alert,
     ScrollView,
     StyleSheet,
 } = React;
@@ -18,6 +19,7 @@ const {
 const mapStateToProps = (state) => {
     return {
         temporadas: state.series.temporadas,
+        token: state.login.token,
     };
 };
 
@@ -40,6 +42,16 @@ const mapDispatchToProps = (dispatch) => {
             })
             .done();
         },
+        deleteTemporada: (token, serie, temporada) => {
+            const URL = `${config.api.url}/series/${serie}/temporada/${temporada}`;
+            return fetch(URL, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+        },
         openModal: (title, component, data) => {
             dispatch({
                 type: 'OPEN_MODAL',
@@ -54,6 +66,7 @@ const mapDispatchToProps = (dispatch) => {
 class Serie extends React.Component {
 
     static propTypes = {
+        deleteTemporada: PropTypes.func,
         getSerie: PropTypes.func,
         navigator: PropTypes.shape({
             push: PropTypes.func,
@@ -68,23 +81,26 @@ class Serie extends React.Component {
             id: PropTypes.number,
             season: PropTypes.number,
         })),
+        token: PropTypes.string,
     }
 
     componentDidMount() {
         this.props.getSerie(this.props.serie.id);
     }
 
+    onDelete(temporada) {
+        if (this.props.token){
+            this.props.deleteTemporada(this.props.token, this.props.serie.id, temporada)
+            .then(() => {
+                this.props.getSerie(this.props.serie.id);
+            });
+        }
+        else {
+            Alert.alert('No estás logueado','Inicia sesión primero');
+        }
+    }
+
     render () {
-        let actions = [
-            {
-                text: 'Borrar',
-                backgroundColor: '#a94442',
-            },
-            {
-                text: 'Editar',
-                backgroundColor: '#48BBEC',
-            },
-        ];
         return (
             <View style={styles.container}>
                 <Text style={styles.description}>{this.props.serie.description}</Text>
@@ -92,6 +108,17 @@ class Serie extends React.Component {
                     {
                         this.props.temporadas.map((temporada) => {
                             const title = `Temporada ${temporada.season}`;
+                            let actions = [
+                                {
+                                    text: 'Borrar',
+                                    backgroundColor: '#a94442',
+                                    onPress: this.onDelete.bind(this, temporada.id),
+                                },
+                                {
+                                    text: 'Editar',
+                                    backgroundColor: '#48BBEC',
+                                },
+                            ];
                             return (
                                 <Swipeout key={temporada.id}
                                     right={actions}
