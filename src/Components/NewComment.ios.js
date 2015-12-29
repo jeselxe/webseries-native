@@ -36,6 +36,18 @@ const mapDispatchToProps = (dispatch) => {
                 body,
             });
         },
+        editComment: (token, serie, season, episode, comment, data) => {
+            const URL = `${config.api.url}/series/${serie}/temporada/${season}/capitulo/${episode}/comentario/${comment}`;
+            const body = JSON.stringify(data);
+            return fetch(URL, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body,
+            });
+        },
         getCapitulo: (serie, season, episode) => {
             const URL = `${config.api.url}/series/${serie}/temporada/${season}/capitulo/${episode}`;
             fetch(URL)
@@ -56,10 +68,16 @@ class NewComment extends React.Component {
     static propTypes = {
         addComment: PropTypes.func,
         data: PropTypes.shape({
+            edit: PropTypes.bool,
             serie: PropTypes.number.isRequired,
             temporada: PropTypes.number.isRequired,
             capitulo: PropTypes.number.isRequired,
+            comentario: PropTypes.shape({
+                id: PropTypes.number,
+                comment: PropTypes.string,
+            }),
         }),
+        editComment: PropTypes.func,
         getCapitulo: PropTypes.func,
         send: PropTypes.func,
         token: PropTypes.string,
@@ -69,14 +87,22 @@ class NewComment extends React.Component {
         this.props.send(this.submit.bind(this));
     }
     submit() {
-        const comentario = this.refs.form.getValue();
-        if(comentario){
+        const comment = this.refs.form.getValue();
+        if(comment){
             if(this.props.token) {
-                const {serie, temporada, capitulo} = this.props.data;
-                this.props.addComment(this.props.token, serie, temporada, capitulo, comentario).then(() => {
-                    this.props.getCapitulo(serie, temporada, capitulo);
-                })
-                .done();
+                const {edit, serie, temporada, capitulo,comentario} = this.props.data;
+                if (edit) {
+                    this.props.editComment(this.props.token, serie, temporada, capitulo, comentario.id, comment).then(() => {
+                        this.props.getCapitulo(serie, temporada, capitulo);
+                    })
+                    .done();
+                }
+                else {
+                    this.props.addComment(this.props.token, serie, temporada, capitulo, comment).then(() => {
+                        this.props.getCapitulo(serie, temporada, capitulo);
+                    })
+                    .done();
+                }
             }
             else {
                 Alert.alert('No estás logueado', 'Inicia sesión primero');
@@ -99,6 +125,7 @@ class NewComment extends React.Component {
                     options={options}
                     ref="form"
                     type={Comentario}
+                    value={this.props.data.comentario}
                 />
             </View>
         );

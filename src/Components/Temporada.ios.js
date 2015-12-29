@@ -97,7 +97,7 @@ class Temporada extends React.Component {
         }
     }
     onUpdate(capitulo) {
-        this.props.openModal('Editar Serie', (<ModalWrapper>{NewEpisode}</ModalWrapper>), {edit: true, serie: this.props.serie.id, temporada: this.props.temporada.id, capitulo});
+        this.props.openModal('Editar Capítulo', (<ModalWrapper>{NewEpisode}</ModalWrapper>), {edit: true, serie: this.props.serie.id, temporada: this.props.temporada.id, capitulo});
     }
 
     render () {

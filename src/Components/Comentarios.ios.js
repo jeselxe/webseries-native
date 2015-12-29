@@ -4,6 +4,8 @@ import {connect} from 'react-redux/native';
 import Listitem from 'react-native-listitem';
 import Swipeout from 'react-native-swipeout';
 import config from '../config';
+import ModalWrapper from './ModalWrapper';
+import NewComment from './NewComment.ios';
 
 const {
     View,
@@ -47,6 +49,14 @@ const mapDispatchToProps = (dispatch) => {
                 },
             });
         },
+        openModal: (title, component, data) => {
+            dispatch({
+                type: 'OPEN_MODAL',
+                component,
+                title,
+                data,
+            });
+        },
     };
 };
 
@@ -63,6 +73,7 @@ class Comentarios extends React.Component {
         }),
         deleteComments: PropTypes.func,
         getComentarios: PropTypes.func,
+        openModal: PropTypes.func,
         serie: PropTypes.shape({
             id: PropTypes.number,
         }),
@@ -87,6 +98,10 @@ class Comentarios extends React.Component {
         }
     }
 
+    onUpdate(comentario) {
+        this.props.openModal('Editar comentario',(<ModalWrapper>{NewComment}</ModalWrapper>), {edit: true, serie: this.props.serie.id, temporada: this.props.temporada, capitulo: this.props.data.id, comentario});
+    }
+
     render () {
         return(
             <View style={styles.container}>
@@ -101,10 +116,12 @@ class Comentarios extends React.Component {
                             {
                                 text: 'Editar',
                                 backgroundColor: '#48BBEC',
+                                onPress: this.onUpdate.bind(this, comentario),
                             },
                         ];
                         return (
-                            <Swipeout key={comentario.id}
+                            <Swipeout autoClose
+                                key={comentario.id}
                                 right={actions}
                             >
                                 <Listitem>
