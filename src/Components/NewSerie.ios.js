@@ -56,6 +56,10 @@ class NewSerie extends React.Component {
         token: PropTypes.string,
     }
 
+    static defaultProps = {
+        data: {},
+    }
+
     componentDidMount() {
         this.props.send(this.submit.bind(this));
     }
