@@ -1,11 +1,13 @@
 /*global fetch*/
 import React, { PropTypes } from 'react-native';
 import {connect} from 'react-redux/native';
-import TableView from 'react-native-tableview';
+import Listitem from 'react-native-listitem';
+import Swipeout from 'react-native-swipeout';
 import config from '../config';
 
 const {
     View,
+    Text,
     StyleSheet,
 } = React;
 
@@ -59,26 +61,32 @@ class Comentarios extends React.Component {
     }
 
     render () {
+        let actions = [
+            {
+                text: 'Borrar',
+                backgroundColor: '#a94442',
+            },
+            {
+                text: 'Editar',
+                backgroundColor: '#48BBEC',
+            },
+        ];
         return(
             <View style={styles.container}>
-            <TableView style={{flex: 1}}
-                tableViewCellStyle={TableView.Consts.CellStyle.Subtitle}
-                tableViewStyle={TableView.Consts.Style.Grouped}
-            >
-                <TableView.Section>
-                    {
-                        this.props.comentarios.map((comentario) => {
-                            return (
-                                <TableView.Item detail={comentario.comment}
-                                    key={comentario.id}
-                                >
-                                    Nombre
-                                </TableView.Item>
-                            );
-                        })
-                    }
-                </TableView.Section>
-            </TableView>
+                {
+                    this.props.comentarios.map((comentario) => {
+                        return (
+                            <Swipeout key={comentario.id}
+                                right={actions}
+                            >
+                                <Listitem>
+                                    <Text style={styles.title}>Nombre</Text>
+                                    <Text style={styles.description}>{comentario.comment}</Text>
+                                </Listitem>
+                            </Swipeout>
+                        );
+                    })
+                }
             </View>
         );
     }
@@ -86,8 +94,15 @@ class Comentarios extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         marginTop: 64,
+    },
+    title: {
+        fontSize: 17,
+        fontWeight: '500',
+    },
+    description: {
+        fontSize: 13,
+        fontWeight: '300',
     },
 });
 

@@ -1,7 +1,8 @@
 /*global fetch*/
 import React, {PropTypes} from 'react-native';
 import {connect} from 'react-redux/native';
-import TableView from 'react-native-tableview';
+import Listitem from 'react-native-listitem';
+import Swipeout from 'react-native-swipeout';
 import config from '../config';
 import Temporada from './Temporada.ios';
 import ModalWrapper from './ModalWrapper';
@@ -10,6 +11,7 @@ import NewEpisode from './NewEpisode.ios';
 const {
     View,
     Text,
+    ScrollView,
     StyleSheet,
 } = React;
 
@@ -73,20 +75,28 @@ class Serie extends React.Component {
     }
 
     render () {
+        let actions = [
+            {
+                text: 'Borrar',
+                backgroundColor: '#a94442',
+            },
+            {
+                text: 'Editar',
+                backgroundColor: '#48BBEC',
+            },
+        ];
         return (
             <View style={styles.container}>
                 <Text style={styles.description}>{this.props.serie.description}</Text>
-                <TableView style={{flex: 1}}
-                    tableViewCellStyle={TableView.Consts.CellStyle.Subtitle}
-                    tableViewStyle={TableView.Consts.Style.Grouped}
-                >
-                    <TableView.Section arrow>
-                        {
-                            this.props.temporadas.map((temporada) => {
-                                const title = `Temporada ${temporada.season}`;
-                                return (
-                                    <TableView.Item
-                                        key={temporada.id}
+                <ScrollView>
+                    {
+                        this.props.temporadas.map((temporada) => {
+                            const title = `Temporada ${temporada.season}`;
+                            return (
+                                <Swipeout key={temporada.id}
+                                    right={actions}
+                                >
+                                    <Listitem
                                         onPress={() => this.props.navigator.push({
                                             title,
                                             component: Temporada,
@@ -96,14 +106,13 @@ class Serie extends React.Component {
                                             rightButtonTitle: 'Nuevo capítulo',
                                             onRightButtonPress: () => this.props.openModal('Nuevo capítulo',(<ModalWrapper>{NewEpisode}</ModalWrapper>), {serie: this.props.serie.id, temporada: temporada.id}),
                                         })}
-                                    >
-                                        {title}
-                                    </TableView.Item>
-                                );
-                            })
-                        }
-                    </TableView.Section>
-                </TableView>
+                                        text={title}
+                                    />
+                                </Swipeout>
+                            );
+                        })
+                    }
+                </ScrollView>
             </View>
         );
     }

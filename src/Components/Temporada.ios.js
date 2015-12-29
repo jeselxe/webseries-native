@@ -1,7 +1,8 @@
 /*global fetch*/
 import React, { PropTypes } from 'react-native';
 import {connect} from 'react-redux/native';
-import TableView from 'react-native-tableview';
+import Listitem from 'react-native-listitem';
+import Swipeout from 'react-native-swipeout';
 import config from '../config';
 import Comentarios from './Comentarios.ios';
 import ModalWrapper from './ModalWrapper';
@@ -69,36 +70,41 @@ class Temporada extends React.Component {
     }
 
     render () {
+        let actions = [
+            {
+                text: 'Borrar',
+                backgroundColor: '#a94442',
+            },
+            {
+                text: 'Editar',
+                backgroundColor: '#48BBEC',
+            },
+        ];
         return (
             <View style={styles.container}>
-                <TableView style={{flex: 1}}
-                    tableViewCellStyle={TableView.Consts.CellStyle.Subtitle}
-                    tableViewStyle={TableView.Consts.Style.Grouped}
-                >
-                    <TableView.Section arrow>
-                        {
-                            this.props.capitulos.map((capitulo) => {
-                                return (
-                                    <TableView.Item
-                                        key={capitulo.id}
-                                        onPress={() => this.props.navigator.push({
-                                            title: capitulo.title,
-                                            component: Comentarios,
-                                            passProps: {
-                                                data: capitulo,
-                                                temporada: this.props.temporada.id,
-                                            },
-                                            rightButtonTitle: 'Nuevo comentario',
-                                            onRightButtonPress: () => this.props.openModal('Nuevo comentario',(<ModalWrapper>{NewComment}</ModalWrapper>), {serie: this.props.serie.id, temporada: this.props.temporada.id, capitulo: capitulo.id}),
-                                        })}
-                                    >
-                                        {capitulo.title}
-                                    </TableView.Item>
-                                );
-                            })
-                        }
-                    </TableView.Section>
-                </TableView>
+                {
+                    this.props.capitulos.map((capitulo) => {
+                        return (
+                            <Swipeout key={capitulo.id}
+                                right={actions}
+                            >
+                                <Listitem
+                                    onPress={() => this.props.navigator.push({
+                                        title: capitulo.title,
+                                        component: Comentarios,
+                                        passProps: {
+                                            data: capitulo,
+                                            temporada: this.props.temporada.id,
+                                        },
+                                        rightButtonTitle: 'Nuevo comentario',
+                                        onRightButtonPress: () => this.props.openModal('Nuevo comentario',(<ModalWrapper>{NewComment}</ModalWrapper>), {serie: this.props.serie.id, temporada: this.props.temporada.id, capitulo: capitulo.id}),
+                                    })}
+                                    text={capitulo.title}
+                                />
+                        </Swipeout>
+                        );
+                    })
+                }
             </View>
         );
     }
@@ -106,7 +112,6 @@ class Temporada extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         marginTop: 64,
     },
 });
