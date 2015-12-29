@@ -11,12 +11,14 @@ import NewComment from './NewComment.ios';
 const {
     StyleSheet,
     View,
+    Alert,
 } = React;
 
 const mapStateToProps = (state) => {
     return {
         serie: state.series.serie,
         capitulos: state.series.capitulos,
+        token: state.login.token,
     };
 };
 
@@ -33,6 +35,16 @@ const mapDispatchToProps = (dispatch) => {
                 });
             })
             .done();
+        },
+        deleteTemporada: (token, serie, temporada, capitulo) => {
+            const URL = `${config.api.url}/series/${serie}/temporada/${temporada}/capitulo/${capitulo}`;
+            return fetch(URL, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
         },
         openModal: (title, component, data) => {
             dispatch({
@@ -51,6 +63,7 @@ class Temporada extends React.Component {
             id: PropTypes.number,
             title: PropTypes.string,
         })),
+        deleteTemporada: PropTypes.func,
         getTemporada: PropTypes.func,
         navigator: PropTypes.shape({
             push: PropTypes.func,
@@ -63,27 +76,41 @@ class Temporada extends React.Component {
             id: PropTypes.number,
             season: PropTypes.number,
         }),
+        token: PropTypes.string,
     }
 
     componentDidMount() {
         this.props.getTemporada(this.props.serie.id, this.props.temporada.id);
     }
 
+    onDelete(capitulo) {
+        if (this.props.token){
+            this.props.deleteTemporada(this.props.token, this.props.serie.id, this.props.temporada.id, capitulo)
+            .then(() => {
+                this.props.getTemporada(this.props.serie.id, this.props.temporada.id);
+            });
+        }
+        else {
+            Alert.alert('No estás logueado','Inicia sesión primero');
+        }
+    }
+
     render () {
-        let actions = [
-            {
-                text: 'Borrar',
-                backgroundColor: '#a94442',
-            },
-            {
-                text: 'Editar',
-                backgroundColor: '#48BBEC',
-            },
-        ];
         return (
             <View style={styles.container}>
                 {
                     this.props.capitulos.map((capitulo) => {
+                        let actions = [
+                            {
+                                text: 'Borrar',
+                                backgroundColor: '#a94442',
+                                onPress: this.onDelete.bind(this, capitulo.id),
+                            },
+                            {
+                                text: 'Editar',
+                                backgroundColor: '#48BBEC',
+                            },
+                        ];
                         return (
                             <Swipeout key={capitulo.id}
                                 right={actions}
