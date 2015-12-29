@@ -33,6 +33,28 @@ const mapDispatchToProps = (dispatch) => {
                 },
             });
         },
+        deleteSerie: (token, serie) => {
+            const URL = `${config.api.url}/series/${serie}`;
+            return fetch(URL, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+        },
+        getSeries: () => {
+            const api = config.api.url;
+            fetch(`${api}/series`)
+            .then((response) => response.json())
+            .then((data) => {
+                dispatch({
+                    type: 'GET_SERIES',
+                    series: data.series,
+                });
+            })
+            .done();
+        },
         getSerie: (id) => {
             const api = config.api.url;
             fetch(`${api}/series/${id}`)
@@ -69,7 +91,9 @@ class Series extends React.Component {
             title: PropTypes.string,
             description: PropTypes.string,
         })),
+        deleteSerie: PropTypes.func,
         getSerie: PropTypes.func,
+        getSeries: PropTypes.func,
         navigator: PropTypes.shape({
             push: PropTypes.func,
         }),
@@ -88,17 +112,19 @@ class Series extends React.Component {
         }
     }
 
+    onDelete(serie) {
+        if (this.props.token){
+            this.props.deleteSerie(this.props.token, serie)
+            .then(() => {
+                this.props.getSeries();
+            });
+        }
+        else {
+            Alert.alert('No estás logueado','Inicia sesión primero');
+        }
+    }
+
     render () {
-        let actions = [
-            {
-                text: 'Borrar',
-                backgroundColor: '#a94442',
-            },
-            {
-                text: 'Editar',
-                backgroundColor: '#48BBEC',
-            },
-        ];
         return(
             <View style={styles.container}>
                 <View style={styles.spinner}>
@@ -109,6 +135,17 @@ class Series extends React.Component {
                 </View>
                     {
                         this.props.data.map((serie) => {
+                            let actions = [
+                                {
+                                    text: 'Borrar',
+                                    backgroundColor: '#a94442',
+                                    onPress: this.onDelete.bind(this, serie.id),
+                                },
+                                {
+                                    text: 'Editar',
+                                    backgroundColor: '#48BBEC',
+                                },
+                            ];
                             return (
                                 <Swipeout key={serie.id}
                                     right={actions}
