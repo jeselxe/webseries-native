@@ -115,13 +115,10 @@ class Serie extends React.Component {
                                     backgroundColor: '#a94442',
                                     onPress: this.onDelete.bind(this, temporada.id),
                                 },
-                                {
-                                    text: 'Editar',
-                                    backgroundColor: '#48BBEC',
-                                },
                             ];
                             return (
-                                <Swipeout key={temporada.id}
+                                <Swipeout autoClose
+                                    key={temporada.id}
                                     right={actions}
                                 >
                                     <Listitem
