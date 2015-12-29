@@ -7,6 +7,8 @@ import Spinner from 'react-native-spinkit';
 import config from '../config';
 
 import Serie from './Serie.ios';
+import ModalWrapper from './ModalWrapper';
+import NewSerie from './NewSerie.ios';
 
 const {
     View,
@@ -72,11 +74,12 @@ const mapDispatchToProps = (dispatch) => {
             })
             .done();
         },
-        openModal: (title, component) => {
+        openModal: (title, component, data) => {
             dispatch({
                 type: 'OPEN_MODAL',
                 component,
                 title,
+                data,
             });
         },
     };
@@ -97,6 +100,7 @@ class Series extends React.Component {
         navigator: PropTypes.shape({
             push: PropTypes.func,
         }),
+        openModal: PropTypes.func,
         token: PropTypes.string,
     }
 
@@ -125,6 +129,10 @@ class Series extends React.Component {
         }
     }
 
+    onUpdate(serie) {
+        this.props.openModal('Editar Serie', (<ModalWrapper>{NewSerie}</ModalWrapper>), {edit: true, serie});
+    }
+
     render () {
         return(
             <View style={styles.container}>
@@ -145,10 +153,12 @@ class Series extends React.Component {
                                 {
                                     text: 'Editar',
                                     backgroundColor: '#48BBEC',
+                                    onPress: this.onUpdate.bind(this, serie),
                                 },
                             ];
                             return (
-                                <Swipeout key={serie.id}
+                                <Swipeout autoClose
+                                    key={serie.id}
                                     right={actions}
                                 >
                                     <Listitem
