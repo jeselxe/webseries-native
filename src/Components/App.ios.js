@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react-native';
 import {connect} from 'react-redux/native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import SeriesScreen from '../Containers/SeriesScreen';
 import NewSerie from './NewSerie.ios';
 import ModalWrapper from './ModalWrapper';
@@ -70,13 +71,14 @@ class App extends React.Component {
         };
         return (
             <TabBarIOS >
-                <TabBarIOS.Item icon={{uri: 'featured', scale: 3}}
+                <Icon.TabBarItem iconName="ios-film"
                     onPress={() => {
                         this.setState({
                             selectedTab: 'series',
                         });
                     }}
                     selected={this.state.selectedTab === 'series'}
+                    selectedIconName="ios-film-outline"
                     title="Series"
                 >
                     <View style={styles.container}>
@@ -92,19 +94,20 @@ class App extends React.Component {
                             }
                         </Modal>
                     </View>
-                </TabBarIOS.Item>
-                <TabBarIOS.Item icon={{uri: 'featured', scale: 3}}
+                </Icon.TabBarItem>
+                <Icon.TabBarItem iconName="ios-paper"
                     onPress={() => {
                         this.setState({
                             selectedTab: 'news',
                         });
                     }}
                     selected={this.state.selectedTab === 'news'}
+                    selectedIconName="ios-paper-outline"
                     title="Notícias"
                 >
                     <View style={[styles.container, {justifyContent: 'center', alignItems: 'center'}]}><Text>PROXIMAMENTE</Text></View>
-                </TabBarIOS.Item>
-                <TabBarIOS.Item icon={{uri: 'featured', scale: 3}}
+                </Icon.TabBarItem>
+                <Icon.TabBarItem iconName="log-in"
                     onPress={() => {
                         this.setState({
                             selectedTab: 'login',
@@ -114,7 +117,7 @@ class App extends React.Component {
                     title="Login"
                 >
                     <Login />
-                </TabBarIOS.Item>
+                </Icon.TabBarItem>
             </TabBarIOS>
         );
     }
