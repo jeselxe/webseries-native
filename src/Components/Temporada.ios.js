@@ -7,6 +7,7 @@ import config from '../config';
 import Comentarios from './Comentarios.ios';
 import ModalWrapper from './ModalWrapper';
 import NewComment from './NewComment.ios';
+import NewEpisode from './NewEpisode.ios';
 
 const {
     StyleSheet,
@@ -95,6 +96,9 @@ class Temporada extends React.Component {
             Alert.alert('No estás logueado','Inicia sesión primero');
         }
     }
+    onUpdate(capitulo) {
+        this.props.openModal('Editar Serie', (<ModalWrapper>{NewEpisode}</ModalWrapper>), {edit: true, serie: this.props.serie.id, temporada: this.props.temporada.id, capitulo});
+    }
 
     render () {
         return (
@@ -110,10 +114,12 @@ class Temporada extends React.Component {
                             {
                                 text: 'Editar',
                                 backgroundColor: '#48BBEC',
+                                onPress: this.onUpdate.bind(this, capitulo),
                             },
                         ];
                         return (
-                            <Swipeout key={capitulo.id}
+                            <Swipeout autoClose
+                                key={capitulo.id}
                                 right={actions}
                             >
                                 <Listitem
