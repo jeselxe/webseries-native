@@ -36,6 +36,18 @@ const mapDispatchToProps = (dispatch) => {
                 body,
             });
         },
+        editEpisode: (token, serie, season, episode, data) => {
+            const URL = `${config.api.url}/series/${serie}/temporada/${season}/capitulo/${episode}`;
+            const body = JSON.stringify(data);
+            return fetch(URL, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body,
+            });
+        },
         getTemporada: (serie, season) => {
             const api = config.api.url;
             fetch(`${api}/series/${serie}/temporada/${season}`)
@@ -55,9 +67,15 @@ class NewEpisode extends React.Component {
     static propTypes = {
         addEpisode: PropTypes.func,
         data: PropTypes.shape({
+            edit: PropTypes.bool,
             serie: PropTypes.number.isRequired,
             temporada: PropTypes.number.isRequired,
+            capitulo: PropTypes.shape({
+                id: PropTypes.number,
+                title: PropTypes.string,
+            }),
         }),
+        editEpisode: PropTypes.func,
         getTemporada: PropTypes.func,
         send: PropTypes.func,
         token: PropTypes.string,
@@ -67,14 +85,22 @@ class NewEpisode extends React.Component {
         this.props.send(this.submit.bind(this));
     }
     submit() {
-        const capitulo = this.refs.form.getValue();
-        if(capitulo){
+        const episode = this.refs.form.getValue();
+        if(episode){
             if(this.props.token) {
-
-                this.props.addEpisode(this.props.token, this.props.data.serie, this.props.data.temporada, capitulo).then(() => {
-                    this.props.getTemporada(this.props.data.serie, this.props.data.temporada);
-                })
-                .done();
+                const {edit, serie, temporada, capitulo} = this.props.data;
+                if (edit) {
+                    this.props.editEpisode(this.props.token, serie, temporada, capitulo.id, episode).then(() => {
+                        this.props.getTemporada(serie, temporada);
+                    })
+                    .done();
+                }
+                else {
+                    this.props.addEpisode(this.props.token, serie, temporada, episode).then(() => {
+                        this.props.getTemporada(serie, temporada);
+                    })
+                    .done();
+                }
             }
             else {
                 Alert.alert('No estás logueado', 'Inicia sesión primero');
@@ -95,6 +121,7 @@ class NewEpisode extends React.Component {
                     options={options}
                     ref="form"
                     type={Capitulo}
+                    value={this.props.data.capitulo}
                 />
             </View>
         );

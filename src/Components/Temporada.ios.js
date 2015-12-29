@@ -1,21 +1,25 @@
 /*global fetch*/
 import React, { PropTypes } from 'react-native';
 import {connect} from 'react-redux/native';
-import TableView from 'react-native-tableview';
+import Listitem from 'react-native-listitem';
+import Swipeout from 'react-native-swipeout';
 import config from '../config';
 import Comentarios from './Comentarios.ios';
 import ModalWrapper from './ModalWrapper';
 import NewComment from './NewComment.ios';
+import NewEpisode from './NewEpisode.ios';
 
 const {
     StyleSheet,
     View,
+    Alert,
 } = React;
 
 const mapStateToProps = (state) => {
     return {
         serie: state.series.serie,
         capitulos: state.series.capitulos,
+        token: state.login.token,
     };
 };
 
@@ -32,6 +36,16 @@ const mapDispatchToProps = (dispatch) => {
                 });
             })
             .done();
+        },
+        deleteCapitulo: (token, serie, temporada, capitulo) => {
+            const URL = `${config.api.url}/series/${serie}/temporada/${temporada}/capitulo/${capitulo}`;
+            return fetch(URL, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
         },
         openModal: (title, component, data) => {
             dispatch({
@@ -50,6 +64,7 @@ class Temporada extends React.Component {
             id: PropTypes.number,
             title: PropTypes.string,
         })),
+        deleteCapitulo: PropTypes.func,
         getTemporada: PropTypes.func,
         navigator: PropTypes.shape({
             push: PropTypes.func,
@@ -62,43 +77,68 @@ class Temporada extends React.Component {
             id: PropTypes.number,
             season: PropTypes.number,
         }),
+        token: PropTypes.string,
     }
 
     componentDidMount() {
         this.props.getTemporada(this.props.serie.id, this.props.temporada.id);
     }
 
+    onDelete(capitulo) {
+        if (this.props.token){
+            this.props.deleteCapitulo(this.props.token, this.props.serie.id, this.props.temporada.id, capitulo)
+            .then(() => {
+                Alert.alert('Borrado!!','El capítulo se ha borrado correctamente');
+                this.props.getTemporada(this.props.serie.id, this.props.temporada.id);
+            });
+        }
+        else {
+            Alert.alert('No estás logueado','Inicia sesión primero');
+        }
+    }
+    onUpdate(capitulo) {
+        this.props.openModal('Editar Capítulo', (<ModalWrapper>{NewEpisode}</ModalWrapper>), {edit: true, serie: this.props.serie.id, temporada: this.props.temporada.id, capitulo});
+    }
+
     render () {
         return (
             <View style={styles.container}>
-                <TableView style={{flex: 1}}
-                    tableViewCellStyle={TableView.Consts.CellStyle.Subtitle}
-                    tableViewStyle={TableView.Consts.Style.Grouped}
-                >
-                    <TableView.Section arrow>
-                        {
-                            this.props.capitulos.map((capitulo) => {
-                                return (
-                                    <TableView.Item
-                                        key={capitulo.id}
-                                        onPress={() => this.props.navigator.push({
-                                            title: capitulo.title,
-                                            component: Comentarios,
-                                            passProps: {
-                                                data: capitulo,
-                                                temporada: this.props.temporada.id,
-                                            },
-                                            rightButtonTitle: 'Nuevo comentario',
-                                            onRightButtonPress: () => this.props.openModal('Nuevo comentario',(<ModalWrapper>{NewComment}</ModalWrapper>), {serie: this.props.serie.id, temporada: this.props.temporada.id, capitulo: capitulo.id}),
-                                        })}
-                                    >
-                                        {capitulo.title}
-                                    </TableView.Item>
-                                );
-                            })
-                        }
-                    </TableView.Section>
-                </TableView>
+                {
+                    this.props.capitulos.map((capitulo) => {
+                        let actions = [
+                            {
+                                text: 'Borrar',
+                                backgroundColor: '#a94442',
+                                onPress: this.onDelete.bind(this, capitulo.id),
+                            },
+                            {
+                                text: 'Editar',
+                                backgroundColor: '#48BBEC',
+                                onPress: this.onUpdate.bind(this, capitulo),
+                            },
+                        ];
+                        return (
+                            <Swipeout autoClose
+                                key={capitulo.id}
+                                right={actions}
+                            >
+                                <Listitem
+                                    onPress={() => this.props.navigator.push({
+                                        title: capitulo.title,
+                                        component: Comentarios,
+                                        passProps: {
+                                            data: capitulo,
+                                            temporada: this.props.temporada.id,
+                                        },
+                                        rightButtonTitle: 'Nuevo comentario',
+                                        onRightButtonPress: () => this.props.openModal('Nuevo comentario',(<ModalWrapper>{NewComment}</ModalWrapper>), {serie: this.props.serie.id, temporada: this.props.temporada.id, capitulo: capitulo.id}),
+                                    })}
+                                    text={capitulo.title}
+                                />
+                        </Swipeout>
+                        );
+                    })
+                }
             </View>
         );
     }
@@ -106,7 +146,6 @@ class Temporada extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         marginTop: 64,
     },
 });

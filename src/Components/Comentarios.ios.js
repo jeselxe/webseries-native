@@ -1,11 +1,16 @@
 /*global fetch*/
 import React, { PropTypes } from 'react-native';
 import {connect} from 'react-redux/native';
-import TableView from 'react-native-tableview';
+import Listitem from 'react-native-listitem';
+import Swipeout from 'react-native-swipeout';
 import config from '../config';
+import ModalWrapper from './ModalWrapper';
+import NewComment from './NewComment.ios';
 
 const {
     View,
+    Text,
+    Alert,
     StyleSheet,
 } = React;
 
@@ -13,6 +18,7 @@ const mapStateToProps = (state) => {
     return {
         comentarios: state.series.comentarios,
         serie: state.series.serie,
+        token: state.login.token,
     };
 };
 
@@ -33,6 +39,24 @@ const mapDispatchToProps = (dispatch) => {
             })
             .done();
         },
+        deleteComments: (token, serie, temporada, capitulo, comentario) => {
+            const URL = `${config.api.url}/series/${serie}/temporada/${temporada}/capitulo/${capitulo}/comentario/${comentario}`;
+            return fetch(URL, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+        },
+        openModal: (title, component, data) => {
+            dispatch({
+                type: 'OPEN_MODAL',
+                component,
+                title,
+                data,
+            });
+        },
     };
 };
 
@@ -47,38 +71,67 @@ class Comentarios extends React.Component {
         data: PropTypes.shape({
             id: PropTypes.number,
         }),
+        deleteComments: PropTypes.func,
         getComentarios: PropTypes.func,
+        openModal: PropTypes.func,
         serie: PropTypes.shape({
             id: PropTypes.number,
         }),
         temporada: PropTypes.number,
+        token: PropTypes.string,
     }
 
     componentDidMount() {
         this.props.getComentarios(this.props.serie.id, this.props.temporada, this.props.data.id);
     }
 
+    onDelete(comentario) {
+        if (this.props.token){
+            this.props.deleteComments(this.props.token, this.props.serie.id, this.props.temporada, this.props.data.id, comentario)
+            .then(() => {
+                Alert.alert('Borrado!!','El comentario se ha borrado correctamente');
+                this.props.getComentarios(this.props.serie.id, this.props.temporada, this.props.data.id);
+            });
+        }
+        else {
+            Alert.alert('No estás logueado','Inicia sesión primero');
+        }
+    }
+
+    onUpdate(comentario) {
+        this.props.openModal('Editar comentario',(<ModalWrapper>{NewComment}</ModalWrapper>), {edit: true, serie: this.props.serie.id, temporada: this.props.temporada, capitulo: this.props.data.id, comentario});
+    }
+
     render () {
         return(
             <View style={styles.container}>
-            <TableView style={{flex: 1}}
-                tableViewCellStyle={TableView.Consts.CellStyle.Subtitle}
-                tableViewStyle={TableView.Consts.Style.Grouped}
-            >
-                <TableView.Section>
-                    {
-                        this.props.comentarios.map((comentario) => {
-                            return (
-                                <TableView.Item detail={comentario.comment}
-                                    key={comentario.id}
-                                >
-                                    Nombre
-                                </TableView.Item>
-                            );
-                        })
-                    }
-                </TableView.Section>
-            </TableView>
+                {
+                    this.props.comentarios.map((comentario) => {
+                        let actions = [
+                            {
+                                text: 'Borrar',
+                                backgroundColor: '#a94442',
+                                onPress: this.onDelete.bind(this, comentario.id),
+                            },
+                            {
+                                text: 'Editar',
+                                backgroundColor: '#48BBEC',
+                                onPress: this.onUpdate.bind(this, comentario),
+                            },
+                        ];
+                        return (
+                            <Swipeout autoClose
+                                key={comentario.id}
+                                right={actions}
+                            >
+                                <Listitem>
+                                    <Text style={styles.title}>Nombre</Text>
+                                    <Text style={styles.description}>{comentario.comment}</Text>
+                                </Listitem>
+                            </Swipeout>
+                        );
+                    })
+                }
             </View>
         );
     }
@@ -86,8 +139,15 @@ class Comentarios extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         marginTop: 64,
+    },
+    title: {
+        fontSize: 17,
+        fontWeight: '500',
+    },
+    description: {
+        fontSize: 13,
+        fontWeight: '300',
     },
 });
 

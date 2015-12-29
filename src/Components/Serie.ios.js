@@ -1,7 +1,8 @@
 /*global fetch*/
 import React, {PropTypes} from 'react-native';
 import {connect} from 'react-redux/native';
-import TableView from 'react-native-tableview';
+import Listitem from 'react-native-listitem';
+import Swipeout from 'react-native-swipeout';
 import config from '../config';
 import Temporada from './Temporada.ios';
 import ModalWrapper from './ModalWrapper';
@@ -10,12 +11,15 @@ import NewEpisode from './NewEpisode.ios';
 const {
     View,
     Text,
+    Alert,
+    ScrollView,
     StyleSheet,
 } = React;
 
 const mapStateToProps = (state) => {
     return {
         temporadas: state.series.temporadas,
+        token: state.login.token,
     };
 };
 
@@ -38,6 +42,16 @@ const mapDispatchToProps = (dispatch) => {
             })
             .done();
         },
+        deleteTemporada: (token, serie, temporada) => {
+            const URL = `${config.api.url}/series/${serie}/temporada/${temporada}`;
+            return fetch(URL, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+        },
         openModal: (title, component, data) => {
             dispatch({
                 type: 'OPEN_MODAL',
@@ -52,6 +66,7 @@ const mapDispatchToProps = (dispatch) => {
 class Serie extends React.Component {
 
     static propTypes = {
+        deleteTemporada: PropTypes.func,
         getSerie: PropTypes.func,
         navigator: PropTypes.shape({
             push: PropTypes.func,
@@ -66,27 +81,47 @@ class Serie extends React.Component {
             id: PropTypes.number,
             season: PropTypes.number,
         })),
+        token: PropTypes.string,
     }
 
     componentDidMount() {
         this.props.getSerie(this.props.serie.id);
     }
 
+    onDelete(temporada) {
+        if (this.props.token){
+            this.props.deleteTemporada(this.props.token, this.props.serie.id, temporada)
+            .then(() => {
+                Alert.alert('Borrada!!','La temporada se ha borrado correctamente');
+                this.props.getSerie(this.props.serie.id);
+            });
+        }
+        else {
+            Alert.alert('No estás logueado','Inicia sesión primero');
+        }
+    }
+
     render () {
         return (
             <View style={styles.container}>
                 <Text style={styles.description}>{this.props.serie.description}</Text>
-                <TableView style={{flex: 1}}
-                    tableViewCellStyle={TableView.Consts.CellStyle.Subtitle}
-                    tableViewStyle={TableView.Consts.Style.Grouped}
-                >
-                    <TableView.Section arrow>
-                        {
-                            this.props.temporadas.map((temporada) => {
-                                const title = `Temporada ${temporada.season}`;
-                                return (
-                                    <TableView.Item
-                                        key={temporada.id}
+                <ScrollView>
+                    {
+                        this.props.temporadas.map((temporada) => {
+                            const title = `Temporada ${temporada.season}`;
+                            let actions = [
+                                {
+                                    text: 'Borrar',
+                                    backgroundColor: '#a94442',
+                                    onPress: this.onDelete.bind(this, temporada.id),
+                                },
+                            ];
+                            return (
+                                <Swipeout autoClose
+                                    key={temporada.id}
+                                    right={actions}
+                                >
+                                    <Listitem
                                         onPress={() => this.props.navigator.push({
                                             title,
                                             component: Temporada,
@@ -96,14 +131,13 @@ class Serie extends React.Component {
                                             rightButtonTitle: 'Nuevo capítulo',
                                             onRightButtonPress: () => this.props.openModal('Nuevo capítulo',(<ModalWrapper>{NewEpisode}</ModalWrapper>), {serie: this.props.serie.id, temporada: temporada.id}),
                                         })}
-                                    >
-                                        {title}
-                                    </TableView.Item>
-                                );
-                            })
-                        }
-                    </TableView.Section>
-                </TableView>
+                                        text={title}
+                                    />
+                                </Swipeout>
+                            );
+                        })
+                    }
+                </ScrollView>
             </View>
         );
     }

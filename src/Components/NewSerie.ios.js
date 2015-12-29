@@ -43,6 +43,14 @@ const mapDispatchToProps = (dispatch) => {
 class NewSerie extends React.Component {
 
     static propTypes = {
+        data: PropTypes.shape({
+            edit: PropTypes.bool,
+            serie: PropTypes.shape({
+                id: PropTypes.number,
+                title: PropTypes.string,
+                description: PropTypes.string,
+            }),
+        }),
         getSeries: PropTypes.func,
         send: PropTypes.func,
         token: PropTypes.string,
@@ -55,20 +63,38 @@ class NewSerie extends React.Component {
         const serie = this.refs.form.getValue();
         if(serie){
             if(this.props.token) {
-                const URL = `${config.api.url}/series`;
-                const body = JSON.stringify(serie);
-                fetch(URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type' : 'application/json',
-                        'Authorization': `Bearer ${this.props.token}`,
-                    },
-                    body,
-                })
-                .then(() => {
-                    this.props.getSeries();
-                })
-                .done();
+                if (this.props.data.edit) {
+                    const URL = `${config.api.url}/series/${this.props.data.serie.id}`;
+                    const body = JSON.stringify(serie);
+                    fetch(URL, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type' : 'application/json',
+                            'Authorization': `Bearer ${this.props.token}`,
+                        },
+                        body,
+                    })
+                    .then(() => {
+                        this.props.getSeries();
+                    })
+                    .done();
+                }
+                else {
+                    const URL = `${config.api.url}/series`;
+                    const body = JSON.stringify(serie);
+                    fetch(URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type' : 'application/json',
+                            'Authorization': `Bearer ${this.props.token}`,
+                        },
+                        body,
+                    })
+                    .then(() => {
+                        this.props.getSeries();
+                    })
+                    .done();
+                }
             }
             else {
                 Alert.alert('No estás logueado', 'Inicia sesión primero');
@@ -94,6 +120,7 @@ class NewSerie extends React.Component {
                     options={options}
                     ref="form"
                     type={Serie}
+                    value={this.props.data.serie}
                 />
             </View>
         );
