@@ -1,7 +1,17 @@
 {
   "name": "webseriesnative",
-  "version": "0.0.1",
+  "description": "Native client for WebSeries made in React-Native",
+  "keywords": ["React", "React-Native", "Redux", "Series", "ios", "android"],
+  "version": "0.1.0",
   "private": true,
+  "author": {
+    "name": "Jesús Gallego Irles",
+    "email": "jesusgallego@outlook.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeselxe/webseries-native.git"
+  },
   "scripts": {
     "start": "rnws start",
     "bundle": "rnws bundle",
@@ -17,6 +27,9 @@
     "react-redux": "^3.1.0",
     "redux": "^3.0.5",
     "tcomb-form-native": "^0.3.3"
+  },
+  "engines": {
+    "node": ">=4.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.3.21",
